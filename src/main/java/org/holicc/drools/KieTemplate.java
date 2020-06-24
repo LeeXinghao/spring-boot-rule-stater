@@ -2,6 +2,7 @@ package org.holicc.drools;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.drools.core.base.evaluators.EvaluatorDefinition;
 import org.drools.decisiontable.InputType;
 import org.drools.decisiontable.SpreadsheetCompiler;
 import org.holicc.drools.util.FileUtil;
@@ -12,6 +13,7 @@ import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
+import org.kie.api.builder.model.KieModuleModel;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
@@ -23,11 +25,9 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.util.Assert;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static org.holicc.drools.common.Constants.*;
 
@@ -39,6 +39,8 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
      * 如果没有分布式的缓存工具，则使用本地缓存
      */
     public Map<String, String> CACHE_RULE = new ConcurrentHashMap<>();
+
+    private Map<String, Class<? extends EvaluatorDefinition>> evaluators = new HashMap<>();
 
     private ClassLoader classLoader;
 
@@ -144,7 +146,18 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
     }
 
     public KieSession session(String dsl, String... dslr) {
+        //
+        List<KieModuleModel> moduleModels = evaluators.entrySet().stream().map(entry ->
+                KieServices.Factory
+                        .get()
+                        .newKieModuleModel()
+                        .setConfigurationProperty(entry.getKey(), entry.getValue().getName())
+        ).collect(Collectors.toList());
+        //
         KieHelper kieHelper = new KieHelper();
+        //
+        moduleModels.forEach(kieHelper::setKieModuleModel);
+        //
         if (StringUtils.isNotBlank(dsl)) {
             kieHelper.addContent(dsl, ResourceType.DSL);
             for (String s : dslr) {
@@ -271,4 +284,7 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
     }
 
 
+    public void setEvaluators(Map<String, Class<? extends EvaluatorDefinition>> evaluators) {
+        this.evaluators = evaluators;
+    }
 }
