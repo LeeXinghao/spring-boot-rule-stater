@@ -17,8 +17,8 @@ public class DroolsRule {
     private static final String TEMPLATE =
             "package com.trs.ai.rules;\n" +
                     "dialect \"java\";\n" +
-                    "import com.trs.ai.ty.drools.FactsProxy;\n" +
-                    "global com.trs.ai.ty.drools.RuleResultsContainer rule;\n" +
+                    "import org.holicc.drools.FactsProxy;\n" +
+                    "global org.holicc.drools.RuleResultsContainer rule;\n" +
                     "rule \"%s\" \nsalience %d\nwhen \n %s\n then \n %s\n end";
 
     private String name;
