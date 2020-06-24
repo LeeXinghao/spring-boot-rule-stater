@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -68,15 +69,17 @@ public class DroolsRule {
 
     private String convertVariables(String dlr) {
         //tokenize
-        Set<String> variables = tokenize(dlr).stream()
+        List<String> variables = tokenize(dlr).stream()
                 .filter(this::shouldIgnore)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         //
         StringBuilder builder = new StringBuilder(dlr);
+        int lastIndex = -1;
         for (String variable : variables) {
-            int i = builder.indexOf(variable);
+            int i = builder.indexOf(variable, lastIndex);
             builder.insert(i, PREFIX)
                     .insert(i + variable.length() + PREFIX.length(), SUFFIX);
+            lastIndex = builder.indexOf(variable, i)+1;
         }
         //
         return builder.toString();
@@ -88,8 +91,8 @@ public class DroolsRule {
                 && !s.matches(KEYWORD_MATCH.toString());
     }
 
-    public static Set<String> tokenize(String dlr) {
-        return Stream.of(dlr.split(OPERATOR_MATCH.toString())).collect(Collectors.toSet());
+    public static List<String> tokenize(String dlr) {
+        return Stream.of(dlr.split(OPERATOR_MATCH.toString())).collect(Collectors.toList());
     }
 
 }
