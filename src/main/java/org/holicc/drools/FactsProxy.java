@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,7 +81,11 @@ public class FactsProxy {
 
     public void putFacts(Object f) {
         if (f instanceof Map) {
-            this.facts.putAll((Map<? extends String, ?>) f);
+            ((Map) f).forEach((k, v) -> {
+                if (Objects.nonNull(k) && Objects.nonNull(v)) {
+                    this.facts.put(k.toString(), v);
+                }
+            });
         } else {
             for (Field field : f.getClass().getFields()) {
                 field.setAccessible(true);
