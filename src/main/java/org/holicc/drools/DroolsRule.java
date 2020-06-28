@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,7 +46,7 @@ public class DroolsRule {
         private String value;
     }
 
-    public String compile() {
+    public String compile(boolean covertVariable) {
         //处理模板变量
         if (Objects.nonNull(attributes) && attributes.length > 0) {
             for (Attribute attribute : attributes) {
@@ -59,11 +58,15 @@ public class DroolsRule {
                 }
             }
         }
+        if (covertVariable) {
+            condition = convertVariables(condition);
+            actions = convertVariables(actions);
+        }
         //
         return String.format(TEMPLATE,
                 name,
                 salience,
-                StringUtils.isNotBlank(condition) ? convertVariables(condition) : StringUtils.EMPTY,
+                StringUtils.isNotBlank(condition) ? condition : StringUtils.EMPTY,
                 actions);
     }
 
@@ -79,7 +82,7 @@ public class DroolsRule {
             int i = builder.indexOf(variable, lastIndex);
             builder.insert(i, PREFIX)
                     .insert(i + variable.length() + PREFIX.length(), SUFFIX);
-            lastIndex = builder.indexOf(variable, i)+1;
+            lastIndex = builder.indexOf(variable, i) + 1;
         }
         //
         return builder.toString();

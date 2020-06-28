@@ -151,7 +151,7 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
                 KieServices.Factory
                         .get()
                         .newKieModuleModel()
-                        .setConfigurationProperty(entry.getKey(), entry.getValue().getName())
+                        .setConfigurationProperty("drools.evaluator." + entry.getKey(), entry.getValue().getName())
         ).collect(Collectors.toList());
         //
         KieHelper kieHelper = new KieHelper();
