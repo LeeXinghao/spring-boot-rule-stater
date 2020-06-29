@@ -35,8 +35,7 @@ public class FactsProxy {
     }
 
     public Object get(String name) {
-        Object o = Optional.ofNullable(factsService.get(name)
-        ).orElse(facts.get(name));
+        Object o = Optional.ofNullable(facts.get(name)).orElse(factsService.get(name));
         if (log.isDebugEnabled()) {
             log.debug("get value by name:[{}] value:[{}]", name, o);
         }
