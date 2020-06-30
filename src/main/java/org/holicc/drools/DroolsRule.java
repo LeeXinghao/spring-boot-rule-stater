@@ -73,7 +73,7 @@ public class DroolsRule {
     private String convertVariables(String dlr) {
         //tokenize
         List<String> variables = tokenize(dlr).stream()
-                .filter(this::shouldIgnore)
+                .filter(DroolsRule::shouldIgnore)
                 .collect(Collectors.toList());
         //
         StringBuilder builder = new StringBuilder(dlr);
@@ -88,7 +88,7 @@ public class DroolsRule {
         return builder.toString();
     }
 
-    private boolean shouldIgnore(String s) {
+    public static boolean shouldIgnore(String s) {
         return !s.isBlank()
                 && !s.matches(OPERATOR_MATCH.toString())
                 && !s.matches(KEYWORD_MATCH.toString());
