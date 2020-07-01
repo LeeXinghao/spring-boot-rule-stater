@@ -180,7 +180,8 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
             for (Message message : messages) {
                 log.error("Error: {}", message.getText());
             }
-            throw new IllegalStateException("Compilation errors.");
+            throw new IllegalStateException("Compilation errors [" + messages.stream().map(Message::getText)
+                    .reduce(String::concat).get() + "]");
         }
         KieBaseConfiguration config = kieHelper.ks.newKieBaseConfiguration();
         if ("stream".equalsIgnoreCase(getMode())) {
