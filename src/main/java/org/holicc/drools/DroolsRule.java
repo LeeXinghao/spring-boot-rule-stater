@@ -37,7 +37,7 @@ public class DroolsRule {
     public static final String SUFFIX = "')";
     public static final Pattern pattern = Pattern.compile("^'.*?'$");
     public static final Pattern KEYWORD_MATCH = Pattern.compile("in|[Aa]nd|[Oo]r|contains|not|matches|return");
-    public static final Pattern OPERATOR_MATCH = Pattern.compile(" |,|==|!=|>=|<=|>|<|\\(|\\)|'.*?'");
+    public static final Pattern OPERATOR_MATCH = Pattern.compile(" |,|\\|\\||&&|\\||&|==|!=|>=|<=|>|<|\\(|\\)|'.*?'");
 
     @Data
     @AllArgsConstructor
@@ -97,5 +97,4 @@ public class DroolsRule {
     public static List<String> tokenize(String dlr) {
         return Stream.of(dlr.split(OPERATOR_MATCH.toString())).collect(Collectors.toList());
     }
-
 }
