@@ -14,12 +14,11 @@ import java.util.stream.Stream;
 @Data
 public class DroolsRule {
 
-    private static final String TEMPLATE =
-            "package com.trs.ai.rules;\n" +
-                    "dialect \"java\";\n" +
-                    "import org.holicc.drools.FactsProxy;\n" +
-                    "global org.holicc.drools.RuleResultsContainer rule;\n" +
-                    "rule \"%s\" \nsalience %d\nwhen \n %s\n then \n %s\n end";
+    public static final String HEADER = "package com.trs.ai.rules;\n" +
+            "dialect \"java\";\n" +
+            "import org.holicc.drools.FactsProxy;\n" +
+            "global org.holicc.drools.RuleResultsContainer rule;\n";
+    private static final String TEMPLATE = "rule \"%s\" \nsalience %d\nwhen \n %s\n then \n %s\n end";
 
     private String name;
 
@@ -36,7 +35,7 @@ public class DroolsRule {
     public static final String PREFIX = "get('";
     public static final String SUFFIX = "')";
     public static final Pattern pattern = Pattern.compile("^'.*?'$");
-    public static final Pattern KEYWORD_MATCH = Pattern.compile("in|[Aa]nd|[Oo]r|contains|not|matches|return");
+    public static final Pattern KEYWORD_MATCH = Pattern.compile("in|[0-9]|[Aa]nd|[Oo]r|contains|not|matches|return");
     public static final Pattern OPERATOR_MATCH = Pattern.compile(" |,|\\|\\||&&|\\||&|==|!=|>=|<=|>|<|\\(|\\)|'.*?'");
 
     @Data
@@ -60,15 +59,15 @@ public class DroolsRule {
         }
         if (covertVariable) {
             condition = convertVariables(condition);
-            actions = convertVariables(actions);
         }
         //
         return String.format(TEMPLATE,
                 name,
                 salience,
-                StringUtils.isNotBlank(condition) ? condition : StringUtils.EMPTY,
+                StringUtils.isNotBlank(condition) ? condition : "1==1",
                 actions);
     }
+
 
     private String convertVariables(String dlr) {
         //tokenize

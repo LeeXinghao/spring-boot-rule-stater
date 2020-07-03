@@ -15,6 +15,8 @@ public class FactsProxy {
 
     private final FactsService factsService;
 
+    private boolean stop = false;
+
     private final Map<String, Object> facts = new ConcurrentHashMap<>();
 
     public FactsProxy(FactsService factsService) {
@@ -96,5 +98,13 @@ public class FactsProxy {
                 }
             }
         }
+    }
+
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
     }
 }

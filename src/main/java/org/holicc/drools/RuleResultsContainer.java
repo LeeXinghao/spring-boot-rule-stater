@@ -1,13 +1,14 @@
 package org.holicc.drools;
 
+import java.util.Map;
+
 public class RuleResultsContainer {
 
     private Object result;
 
-    public boolean find() {
-        System.out.println("\n i'm hook!");
-        return true;
-    }
+    public boolean stop = false;
+
+    public Map<String, String> results;
 
     public Object getResult() {
         return result;
