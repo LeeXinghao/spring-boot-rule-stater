@@ -9,7 +9,7 @@ public class RuleResultsContainer {
 
     public boolean stop = false;
 
-    public Map<String, String> results = new HashMap<>();
+    public Map<String, Object> results = new HashMap<>();
 
     private Throwable error;
 

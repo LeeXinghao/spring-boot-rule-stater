@@ -100,6 +100,10 @@ public class FactsProxy {
         }
     }
 
+    public void put(String key, Object value) {
+        this.facts.put(key, value);
+    }
+
     public boolean isStop() {
         return stop;
     }

@@ -4,12 +4,12 @@ import org.holicc.drools.FactsProxy;
 import org.holicc.drools.FactsService;
 import org.holicc.drools.KieSchedule;
 import org.holicc.drools.KieTemplate;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 
 @Configuration
 @EnableConfigurationProperties(DroolsProperties.class)
@@ -36,7 +36,7 @@ public class DroolsAutoConfiguration {
     }
 
     @Bean
-    @Scope(scopeName = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
+    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public FactsProxy factsProxy(FactsService factsService) {
         return new FactsProxy(factsService);
     }
