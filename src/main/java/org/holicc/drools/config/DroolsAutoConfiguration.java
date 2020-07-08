@@ -8,9 +8,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.HashMap;
-import java.util.Optional;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 @Configuration
 @EnableConfigurationProperties(DroolsProperties.class)
@@ -19,13 +18,7 @@ public class DroolsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "kieTemplate")
     public KieTemplate kieTemplate(DroolsProperties droolsProperties) {
-        KieTemplate kieTemplate = new KieTemplate();
-        kieTemplate.setPath(droolsProperties.getPath());
-        kieTemplate.setMode(droolsProperties.getMode());
-        kieTemplate.setUpdate(droolsProperties.getUpdate());
-        kieTemplate.setEvaluators(Optional.ofNullable(droolsProperties.getEvaluators())
-                .orElse(new HashMap<>()));
-        return kieTemplate;
+        return new KieTemplate(droolsProperties);
     }
 
     @Bean
@@ -43,6 +36,7 @@ public class DroolsAutoConfiguration {
     }
 
     @Bean
+    @Scope(scopeName = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public FactsProxy factsProxy(FactsService factsService) {
         return new FactsProxy(factsService);
     }

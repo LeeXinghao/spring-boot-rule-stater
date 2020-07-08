@@ -107,4 +107,8 @@ public class FactsProxy {
     public void setStop(boolean stop) {
         this.stop = stop;
     }
+
+    public void throwException(String msg) throws Exception {
+        throw new Exception(msg);
+    }
 }

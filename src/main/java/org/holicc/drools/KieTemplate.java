@@ -2,9 +2,9 @@ package org.holicc.drools;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.drools.core.base.evaluators.EvaluatorDefinition;
 import org.drools.decisiontable.InputType;
 import org.drools.decisiontable.SpreadsheetCompiler;
+import org.holicc.drools.config.DroolsProperties;
 import org.holicc.drools.util.FileUtil;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -19,6 +19,9 @@ import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionsPool;
+import org.kie.api.runtime.StatelessKieSession;
+import org.kie.internal.conf.ConsequenceExceptionHandlerOption;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -35,16 +38,16 @@ import static org.holicc.drools.common.Constants.*;
 @Slf4j
 public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
 
-    /**
-     * 如果没有分布式的缓存工具，则使用本地缓存
-     */
     public Map<String, String> CACHE_RULE = new ConcurrentHashMap<>();
 
-    private Map<String, Class<? extends EvaluatorDefinition>> evaluators = new HashMap<>();
+    private final DroolsProperties droolsProperties;
 
     private ClassLoader classLoader;
 
-    public KieTemplate() {
+    private KieSessionsPool kieSessionsPool;
+
+    public KieTemplate(DroolsProperties droolsProperties) {
+        this.droolsProperties = droolsProperties;
     }
 
 
@@ -145,9 +148,9 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
         return null;
     }
 
-    public KieSession session(String dsl, String... dslr) {
+    public StatelessKieSession statelessKieSession(String dsl, String... dslr) {
         //
-        List<KieModuleModel> moduleModels = evaluators.entrySet().stream().map(entry ->
+        List<KieModuleModel> moduleModels = droolsProperties.getEvaluators().entrySet().stream().map(entry ->
                 KieServices.Factory
                         .get()
                         .newKieModuleModel()
@@ -168,12 +171,29 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
                 kieHelper.addContent(s, ResourceType.DRL);
             }
         }
-        KieBaseConfiguration config = verify(kieHelper);
         //
-        return kieHelper.build(config).newKieSession();
+        verify(kieHelper);
+        //
+        KieBaseConfiguration config = getKieBaseConfiguration(kieHelper);
+        //
+        return kieHelper.build(config).newStatelessKieSession();
     }
 
-    private KieBaseConfiguration verify(KieHelper kieHelper) {
+    private KieBaseConfiguration getKieBaseConfiguration(KieHelper kieHelper) {
+        KieBaseConfiguration config = kieHelper.ks.newKieBaseConfiguration();
+        if ("stream".equalsIgnoreCase(getMode())) {
+            config.setOption(EventProcessingOption.STREAM);
+        } else {
+            config.setOption(EventProcessingOption.CLOUD);
+        }
+        //
+        if (Objects.nonNull(droolsProperties.getExceptionHandler())) {
+            config.setOption(ConsequenceExceptionHandlerOption.get(droolsProperties.getExceptionHandler()));
+        }
+        return config;
+    }
+
+    public void verify(KieHelper kieHelper) {
         Results results = kieHelper.verify();
         if (results.hasMessages(Message.Level.WARNING, Message.Level.ERROR)) {
             List<Message> messages = results.getMessages(Message.Level.WARNING, Message.Level.ERROR);
@@ -183,13 +203,6 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
             throw new IllegalStateException("Compilation errors [" + messages.stream().map(Message::getText)
                     .reduce(String::concat).get() + "]");
         }
-        KieBaseConfiguration config = kieHelper.ks.newKieBaseConfiguration();
-        if ("stream".equalsIgnoreCase(getMode())) {
-            config.setOption(EventProcessingOption.STREAM);
-        } else {
-            config.setOption(EventProcessingOption.CLOUD);
-        }
-        return config;
     }
 
     /**
@@ -214,7 +227,7 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
                 kieHelper.addContent(s, ResourceType.DSLR);
             }
         }
-        return kieHelper.build(verify(kieHelper));
+        return kieHelper.build(getKieBaseConfiguration(kieHelper));
     }
 
     /**
@@ -282,10 +295,5 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
             }
         }
         return ds;
-    }
-
-
-    public void setEvaluators(Map<String, Class<? extends EvaluatorDefinition>> evaluators) {
-        this.evaluators = evaluators;
     }
 }

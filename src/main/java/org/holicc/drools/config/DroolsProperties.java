@@ -1,6 +1,7 @@
 package org.holicc.drools.config;
 
 import org.drools.core.base.evaluators.EvaluatorDefinition;
+import org.kie.api.runtime.rule.ConsequenceExceptionHandler;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Map;
@@ -28,6 +29,8 @@ public class DroolsProperties {
      * 自定义操作符
      */
     private Map<String, Class<? extends EvaluatorDefinition>> evaluators;
+
+    private Class<? extends ConsequenceExceptionHandler> exceptionHandler;
 
     public String getPath() {
         return path;
@@ -59,5 +62,13 @@ public class DroolsProperties {
 
     public void setEvaluators(Map<String, Class<? extends EvaluatorDefinition>> evaluators) {
         this.evaluators = evaluators;
+    }
+
+    public void setExceptionHandler(Class<? extends ConsequenceExceptionHandler> exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
+
+    public Class<? extends ConsequenceExceptionHandler> getExceptionHandler() {
+        return exceptionHandler;
     }
 }
