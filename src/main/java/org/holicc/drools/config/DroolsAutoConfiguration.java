@@ -1,15 +1,14 @@
 package org.holicc.drools.config;
 
-import org.holicc.drools.FactsProxy;
-import org.holicc.drools.FactsService;
-import org.holicc.drools.KieSchedule;
-import org.holicc.drools.KieTemplate;
+import org.holicc.drools.*;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+
+import java.util.Map;
 
 @Configuration
 @EnableConfigurationProperties(DroolsProperties.class)
@@ -32,7 +31,17 @@ public class DroolsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(value = {FactsService.class})
     public FactsService factsService() {
-        return key -> null;
+        return new FactsService() {
+            @Override
+            public Object get(String key) {
+                return null;
+            }
+
+            @Override
+            public Map<String,Object> doService(String serviceName, Object params) {
+                return null;
+            }
+        };
     }
 
     @Bean
