@@ -1,0 +1,11 @@
+
+g
+java:S2095"NUse try-with-resources or close this "FileOutputStream" in a "finally" clause.(Ø›º¹þÿÿÿÿ
+S
+java:S1118":Add a private constructor to hide the implicit public one.(‡ÛŸÚýÿÿÿÿ
+f
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 23 to the 15 allowed.(ÚéèÒ
+c
+java:S2674"JCheck the return value of the "read" call to see how many bytes were read.(ë¥áïøÿÿÿÿ
+C
+java:S2093"*Change this "try" to a try-with-resources.(¡»¢üùÿÿÿÿ

@@ -1,0 +1,12 @@
+
+P
+java:S1444"3Make this "public static RULE_SCHEDULE" field final(πίμÿ8ύΧµ.
+k
+java:S3014"IRemove this use of "ThreadGroup". Prefer the use of "ThreadPoolExecutor".(‹©Φύÿÿÿÿ8ύΧµ.
+v
+java:S1104"YMake RULE_SCHEDULE a static final constant or non-public and provide accessors if needed.(πίμÿ8ύΧµ.
+u
+java:S3008"XRename this field "RULE_SCHEDULE" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(πίμÿ8ύΧµ.
+V
+java:S1118
+":Add a private constructor to hide the implicit public one.(ξ¦µW8ύΧµ.
