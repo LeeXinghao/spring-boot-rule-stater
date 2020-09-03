@@ -16,7 +16,7 @@ public class FactsProxy {
 
     private boolean stop = false;
 
-    private final Map<String, Object> facts = new ConcurrentHashMap<>();
+    private Map<String, Object> facts = new ConcurrentHashMap<>();
 
     public FactsProxy(FactsService factsService) {
         this.factsService = factsService;
@@ -24,7 +24,7 @@ public class FactsProxy {
 
     public Object get(String name) {
         Object o = Optional.ofNullable(facts.get(name))
-                .orElseGet(() -> factsService.get(name));
+                .orElseGet(() -> factsService.get(facts,name));
         if (log.isDebugEnabled()) {
             log.debug("get value by name:[{}] value:[{}]", name, o);
         }
@@ -55,6 +55,10 @@ public class FactsProxy {
         this.facts.put(key, value);
     }
 
+    public Map<String, Object> getFacts(){
+        return this.facts;
+    }
+
     public boolean isStop() {
         return stop;
     }
@@ -67,9 +71,18 @@ public class FactsProxy {
         throw new Exception(msg);
     }
 
-    public Map<String,Object> doService(String serviceName, String key) {
+    public Map<String,Object> doService(String serviceObj, String key) {
         try {
-            return factsService.doService(serviceName, this.facts.get(key));
+            return factsService.doService(serviceObj, this.facts.get(key));
+        } catch (Exception e) {
+            log.error("do service failed !", e);
+            return null;
+        }
+    }
+
+    public Map<String, Object> doMark(String key, Object values){
+        try {
+            return factsService.doMark(key, values);
         } catch (Exception e) {
             log.error("do service failed !", e);
             return null;

@@ -33,12 +33,17 @@ public class DroolsAutoConfiguration {
     public FactsService factsService() {
         return new FactsService() {
             @Override
-            public Object get(String key) {
+            public Object get(Map<String, Object> facts, String key) {
                 return null;
             }
 
             @Override
-            public Map<String,Object> doService(String serviceName, Object params) {
+            public Map<String, Object> doService(String serviceName, Object params) {
+                return null;
+            }
+
+            @Override
+            public Map<String, Object> doMark(String key, Object values) {
                 return null;
             }
         };

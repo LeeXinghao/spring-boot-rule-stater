@@ -30,7 +30,6 @@ import org.springframework.util.Assert;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static org.holicc.drools.common.Constants.*;
 
@@ -150,16 +149,22 @@ public class KieTemplate extends KieAccessor implements BeanClassLoaderAware {
 
     public StatelessKieSession statelessKieSession(String dsl, String... dslr) {
         //
-        List<KieModuleModel> moduleModels = droolsProperties.getEvaluators().entrySet().stream().map(entry ->
-                KieServices.Factory
-                        .get()
-                        .newKieModuleModel()
-                        .setConfigurationProperty("drools.evaluator." + entry.getKey(), entry.getValue().getName())
-        ).collect(Collectors.toList());
+//        List<KieModuleModel> moduleModels = droolsProperties.getEvaluators().entrySet().stream().map(entry ->
+//                KieServices.Factory
+//                        .get()
+//                        .newKieModuleModel()
+//                        .setConfigurationProperty("drools.evaluator." + entry.getKey(), entry.getValue().getName())
+//        ).collect(Collectors.toList());
         //
         KieHelper kieHelper = new KieHelper();
         //
-        moduleModels.forEach(kieHelper::setKieModuleModel);
+//        moduleModels.forEach(kieHelper::setKieModuleModel);
+        KieModuleModel kieModuleModel = KieServices.Factory
+                .get()
+                .newKieModuleModel();
+        droolsProperties.getEvaluators().forEach((key, value) -> kieModuleModel.setConfigurationProperty("drools.evaluator." + key, value.getName()));
+
+        kieHelper.setKieModuleModel(kieModuleModel);
         //
         if (StringUtils.isNotBlank(dsl)) {
             kieHelper.addContent(dsl, ResourceType.DSL);

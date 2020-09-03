@@ -36,7 +36,7 @@ public class DroolsRule {
     public static final String SUFFIX = "')";
     public static final Pattern pattern = Pattern.compile("^'.*?'$");
     //TODO expose a api
-    public static final Pattern KEYWORD_MATCH = Pattern.compile("in|[0-9]|[Aa]nd|[Oo]r|contains|not|true|false|matches|null|return");
+    public static final Pattern KEYWORD_MATCH = Pattern.compile("ckm|in|[0-9]|[Aa]nd|[Oo]r|contains|not|true|false|matches|null|return");
     public static final Pattern OPERATOR_MATCH = Pattern.compile(" |,|\\|\\||&&|\\||&|==|!=|>=|<=|>|<|\\(|\\)|'.*?'");
 
     @Data
